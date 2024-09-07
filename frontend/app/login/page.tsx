@@ -1,17 +1,19 @@
-import { useState } from 'react';
-import { supabase } from '../../lib/supabaseClient';
-import { useRouter } from 'next/router';
+'use client';
 
-export default function Signup() {
+import { useState } from 'react';
+import supabase from '../../lib/supabaseClient';
+import { useRouter } from 'next/navigation';
+
+export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const { error } = await supabase.auth.signUp({
+    const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -25,8 +27,8 @@ export default function Signup() {
 
   return (
     <div className="auth-container">
-      <h1>Signup</h1>
-      <form onSubmit={handleSignup}>
+      <h1>Login</h1>
+      <form onSubmit={handleLogin}>
         {error && <p style={{ color: 'red' }}>{error}</p>}
         <input
           type="email"
@@ -42,7 +44,7 @@ export default function Signup() {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <button type="submit">Signup</button>
+        <button type="submit">Login</button>
       </form>
     </div>
   );

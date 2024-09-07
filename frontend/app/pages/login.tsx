@@ -1,21 +1,33 @@
 import { useState } from 'react';
-import '../styles/auth.css';
-
+import supabase from '../../lib/supabaseClient';
+import { useRouter } from 'next/router';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log('Logging in with:', email, password);
-    // Add your login API request here
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      setError(error.message);
+    } else {
+      router.push('/dashboard');
+    }
   };
 
   return (
     <div className="auth-container">
       <h1>Login</h1>
       <form onSubmit={handleLogin}>
+        {error && <p style={{ color: 'red' }}>{error}</p>}
         <input
           type="email"
           placeholder="Email"

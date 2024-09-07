@@ -1,49 +1,56 @@
-"use client"; 
+'use client';
+
 import { useState } from 'react';
-import './styles/global.css'
 import SearchBar from './components/SearchBar';
-import Navbar from './components/Navbar';
+import Link from 'next/link';
+import supabase from '../lib/supabaseClient';
 
-interface SearchResult {
-  id: number;
-  title: string;
-}
-
-export default function Home() {
-
-  const [results, setResults] = useState<SearchResult[]>([]);
+export default function HomePage() {
+  const [searchResults, setSearchResults] = useState<any[]>([]);
 
   const handleSearch = async (query: string) => {
-    const response = await fetch('/api/search', {
-      method: 'POST',
-      body: JSON.stringify({ query }),
-      headers: { 'Content-Type': 'application/json' },
-    });
-    
-    if (response.ok) {
-      const data: SearchResult[] = await response.json();
-      setResults(data);
+    const { data, error } = await supabase
+      .from('papers')
+      .select('*')
+      .ilike('abstract', `%${query}%`);
+
+    if (error) {
+      console.error('Error fetching data:', error);
     } else {
-      console.error('Search failed');
+      setSearchResults(data);
     }
   };
 
   return (
-    <div>
-      <Navbar />
-      <h1>Search Research Papers</h1>
+    <main className="home-container">
+      <h1>Welcome to the Research Paper Search System</h1>
+      <p>Use our system to search for research papers, manage your profile, and more!</p>
+
       <SearchBar onSearch={handleSearch} />
-      <div>
-        {results.length > 0 ? (
+
+      <div className="search-results">
+        {searchResults.length > 0 ? (
           <ul>
-            {results.map((result) => (
-              <li key={result.id}>{result.title}</li>
+            {searchResults.map((result) => (
+              <li key={result.id}>
+                <h3>{result.title}</h3>
+                <p>{result.abstract}</p>
+              </li>
             ))}
           </ul>
         ) : (
-          <p>No results found</p>
+          <p>No results yet. Try searching for papers!</p>
         )}
       </div>
-    </div>
+
+      <div className="auth-links">
+        <Link href="/login">Login</Link>
+        <Link href="/signup">Signup</Link>
+      </div>
+
+      <footer className="footer">
+        <p>© 2024 Research Paper Management System</p>
+      </footer>
+    </main>
   );
 }

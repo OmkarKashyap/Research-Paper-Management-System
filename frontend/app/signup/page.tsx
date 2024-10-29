@@ -13,10 +13,13 @@ export default function Signup() {
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
     });
+    console.log(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+
+    console.log(data, error)
 
     if (error) {
       setError(error.message);
@@ -44,6 +47,8 @@ export default function Signup() {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
+        {email}
+        {password}
         <button type="submit">Signup</button>
       </form>
     </div>

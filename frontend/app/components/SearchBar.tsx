@@ -1,29 +1,23 @@
 import { useState } from 'react';
 
-interface SearchBarProps {
-  onSearch: (query: string) => void;
-}
+export default function SearchBar({ onSearch }: { onSearch: (query: string) => void }) {
+  const [query, setQuery] = useState('');
 
-export default function SearchBar({ onSearch }: SearchBarProps) {
-  const [query, setQuery] = useState<string>('');
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (query.trim()) {
-      onSearch(query);
-    }
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setQuery(value);
+    onSearch(value); // Calls the parent search function
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <div>
       <input
         type="text"
         value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search papers..."
-        required
+        onChange={handleChange}
+        placeholder="Search for papers..."
+        className="search-input"
       />
-      <button type="submit">Search</button>
-    </form>
+    </div>
   );
 }

@@ -17,14 +17,13 @@ export default function Profile() {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         setUser(user);
-        await fetchLikedPapers(user.id); // Fetch liked papers for the logged-in user
+        await fetchLikedPapers(user.id); 
       } else {
         router.push('/login');
       }
     };
 
     const fetchLikedPapers = async (userId: string) => {
-      // Step 1: Retrieve the list of liked paper IDs from the user's record
       const { data, error } = await supabase
         .from('users')
         .select('likes')
@@ -34,7 +33,6 @@ export default function Profile() {
       if (error) {
         console.error('Error fetching user likes:', error);
       } else if (data?.likes && data.likes.length > 0) {
-        // Step 2: Fetch details of the liked papers using the IDs in `likes`
         const { data: papers, error: papersError } = await supabase
           .from('trial')
           .select('*')

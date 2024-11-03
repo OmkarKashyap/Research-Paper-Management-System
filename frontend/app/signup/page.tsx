@@ -13,18 +13,33 @@ export default function Signup() {
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-    console.log(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+      const { data, error: signupError } = await supabase.auth.signUp({
+        email,
+        password,
+      });
 
-    console.log(data, error)
+      if (signupError) {
+        setError(signupError.message);
+        return;
+      }
 
-    if (error) {
-      setError(error.message);
-    } else {
-      router.push('/dashboard');
+      const user = data?.user;
+      console.log(data)
+      if (user) {
+        const { error: insertError } = await supabase
+          .from('users')
+          .insert({
+            id: user.id,
+            email: user.email,
+            created_at: new Date().toISOString() 
+          });
+
+        if (insertError) {
+          setError(insertError.message);
+          return;
+        }
+
+      router.push('/login');
     }
   };
 
@@ -47,11 +62,8 @@ export default function Signup() {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        {email}
-        {password}
         <button type="submit">Signup</button>
       </form>
     </div>
   );
 }
-

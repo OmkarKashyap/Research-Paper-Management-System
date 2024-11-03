@@ -12,15 +12,45 @@ export default function Login() {
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data: sessionData, error: authError } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
-    if (error) {
-      setError(error.message);
-    } else {
+    if (authError) {
+      setError(authError.message);
+      return;
+    }
+
+    const user = sessionData?.user;
+
+    if (user) {
+      const { data: existingUser, error: fetchError } = await supabase
+        .from('users')
+        .select('id')
+        .eq('id', user.id)
+        .single();
+
+      if (fetchError) {
+        setError(fetchError.message);
+        return;
+      }
+
+      if (!existingUser) {
+        const { error: insertError } = await supabase
+          .from('users')
+          .insert({
+            id: user.id,
+            email: user.email,
+            created_at: new Date().toISOString() 
+          });
+
+        if (insertError) {
+          setError(insertError.message);
+          return;
+        }
+      }
+
       router.push('/dashboard');
     }
   };

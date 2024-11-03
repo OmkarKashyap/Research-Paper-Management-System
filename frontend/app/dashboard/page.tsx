@@ -63,12 +63,12 @@ export default function Dashboard() {
     }
   };
 
-  const handleLike = async (paperId: string) => {
+  const handleLike = async (paperTitle: string) => {
     if (!user) return;
 
-    const updatedLikes = likedPapers.includes(paperId)
-      ? likedPapers.filter(id => id !== paperId) // Remove if already liked
-      : [...likedPapers, paperId]; // Add if not liked
+    const updatedLikes = likedPapers.includes(paperTitle)
+      ? likedPapers.filter(title => title !== paperTitle) 
+      : [...likedPapers, paperTitle]; 
 
     const { error } = await supabase
       .from('users')
@@ -105,7 +105,7 @@ export default function Dashboard() {
             <button onClick={handleSearch}>Search</button>
           </div>
         </div>
-
+        <p>{likedPapers}</p>
         <div className="search-results">
           {searchResults.length > 0 ? (
             <ul>
@@ -114,10 +114,10 @@ export default function Dashboard() {
                   <h3>{result.title}</h3>
                   <p>{result.authors}</p>
                   <button
-                    onClick={() => handleLike(result.id)}
-                    className={likedPapers.includes(result.id) ? 'liked' : 'unliked'}
+                    onClick={() => handleLike(result.title)}
+                    className={likedPapers.includes(result.title) ? 'liked' : 'unliked'}
                   >
-                    {likedPapers.includes(result.id) ? '❤️' : '♡'}
+                    {likedPapers.includes(result.title) ? '❤️' : '♡'}
                   </button>
                 </li>
               ))}
@@ -125,6 +125,7 @@ export default function Dashboard() {
           ) : (
             <p>No similar papers found. Try a different search term!</p>
           )}
+          <p>{likedPapers}</p>
         </div>
         <div className="auth-links">
           <Link href="/login" className="auth-link">Login</Link>

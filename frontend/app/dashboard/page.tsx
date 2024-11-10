@@ -67,7 +67,7 @@ export default function Dashboard() {
   const handleLike = async (title: string, volume: string, authors: string, year: number, pages: string, link: string) => {
     if (!user) return;
   
-    let error;
+   let error;
   
     // Step 1: Check if the paper exists in the 'items' table by title
     const { data: existingItem, error: itemCheckError } = await supabase

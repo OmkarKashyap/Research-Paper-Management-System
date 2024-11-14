@@ -22,7 +22,7 @@ export default function NavBar() {
   };
 
   return (
-    <nav className="navbar">
+    <nav className="bg-white text-black">
       <div className="logo">
         <Link href="/">Research</Link>
       </div>
@@ -43,7 +43,7 @@ export default function NavBar() {
               <Link href="/login">Login</Link>
             </li>
             <li>
-              <Link href="/signup">Signup</Link>
+              <Link href="/signup">Signup</Link>  
             </li>
           </>
         )}

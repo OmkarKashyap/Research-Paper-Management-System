@@ -4,6 +4,7 @@ import { useState } from 'react';
 import supabase from '../../lib/supabaseClient';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Header from '../components/Header';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -58,6 +59,7 @@ export default function Login() {
 
   return (
     <div className="auth-container">
+      <Header />
       {/* <h1>Login</h1>
       <form onSubmit={handleLogin}>
         {error && <p style={{ color: 'red' }}>{error}</p>}

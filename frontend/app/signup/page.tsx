@@ -4,7 +4,7 @@ import { useState } from 'react';
 import supabase from '../../lib/supabaseClient';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-
+import Header from '../components/Header';
 export default function Signup() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -68,7 +68,8 @@ export default function Signup() {
     //   </form>
     // </div>
     <section className="flex justify-center items-center min-h-screen bg-slate-950">
-      <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8 space-y-6 dark:bg-gray-800 dark:border-gray-700">
+      <Header />
+      <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8 mt-10 space-y-6 dark:bg-gray-800 dark:border-gray-700">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white text-center">
           Create an Account
         </h1>

@@ -7,6 +7,10 @@ import { User } from '@supabase/supabase-js';
 
 import NavBar from '../components/Navbar';
 import Link from 'next/link';
+import InputField from "../components/InputField";
+import SearchResults from "../components/SearchResults";
+import PaperItem from '../components/PaperItem';
+import Header from '../components/Header';
 
 export default function Dashboard() {
   const [user, setUser] = useState<User | null>(null);
@@ -66,8 +70,22 @@ export default function Dashboard() {
 
   const handleLike = async (title: string, volume: string, authors: string, year: number, pages: string, link: string) => {
     if (!user) return;
-  
-   let error;
+    
+    // Insert item if it doesn't exist
+    await supabase.rpc('insert_item_if_not_exists', {
+      item_title: title,
+      item_volume: volume,
+      item_authors: authors,
+      item_year: year,
+      item_pages: pages,
+      item_link: link
+    });
+
+    // Toggle like using the new RPC function
+    let { data:isLiked, error } = await supabase.rpc('toggle_like', {
+      user_id: user.id,
+      item_title: title
+    });
   
     // Step 1: Check if the paper exists in the 'items' table by title
     const { data: existingItem, error: itemCheckError } = await supabase
@@ -140,53 +158,44 @@ export default function Dashboard() {
   };
 
   return (
-    <div>
-      <main className="home-container">
-        <h1>Welcome {user.email} to the Research Paper Search System</h1>
-        <p>Use our system to search for research papers, manage your profile, and more!</p>
-        <p>{query}</p>
-        <div className="search-bar">
-          <div>
-            <input
-              type="text"
-              value={query}
-              onChange={handleChange}
-              placeholder="Type to search..."
-            />
-            <button onClick={handleSearch}>Search</button>
-          </div>
-        </div>
-        <p>{likedPapers.join(', ')}</p>
-        <div className="search-results">
-          {searchResults.length > 0 ? (
-            <ul>
-              {searchResults.map((result) => (
-                <li key={result.id} className="paper-item">
-                  <h3>{result.title}</h3>
-                  <p>{result.authors}</p>
-                  <button
-                    onClick={() => handleLike(result.title, result.volume, result.authors, result.year, result.pages, result.link)}
-                    className={likedPapers.includes(result.id) ? 'liked' : 'unliked'}
-                  >
-                    {likedPapers.includes(result.id) ? '❤️' : '♡'}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No similar papers found. Try a different search term!</p>
-          )}
-        </div>
-        <div className="auth-links">
-          <Link href="/login" className="auth-link">Login</Link>
-          <Link href="/signup" className="auth-link">Signup</Link>
-        </div>
-      </main>
+    <div className="min-h-screen bg-black text-white flex flex-col items-center">
+      <Header />
+      <div className="flex items-center max-w-lg w-full mt-10 space-x-2">
+        <input
+          className="w-full p-3 rounded-l-lg bg-black text-white placeholder-gray-400 border border-gray-700 focus:outline-none"
+          type="text"
+          placeholder="e.g., Black Holes"
+          value={query}
+          onChange={handleChange}
+        />
+        <button
+          className="p-3 bg-white text-black rounded-r-lg flex items-center justify-center"
+          onClick={handleSearch}
+        >
+          <svg fill="#000000" width="20px" height="28px" viewBox="0 -0.24 28.423 28.423" id="_02_-_Search_Button" data-name="02 - Search Button" xmlns="http://www.w3.org/2000/svg">
+  <path id="Path_215" data-name="Path 215" d="M14.953,2.547A12.643,12.643,0,1,0,27.6,15.19,12.649,12.649,0,0,0,14.953,2.547Zm0,2A10.643,10.643,0,1,1,4.31,15.19,10.648,10.648,0,0,1,14.953,4.547Z" transform="translate(-2.31 -2.547)" fill-rule="evenodd"/>   <path id="Path_216" data-name="Path 216" d="M30.441,28.789l-6.276-6.276a1,1,0,1,0-1.414,1.414L29.027,30.2a1,1,0,1,0,1.414-1.414Z" transform="translate(-2.31 -2.547)" fill-rule="evenodd"/>
+ </svg>
+        </button>
+      </div>
 
-      <footer className="footer">
-        <p>© 2024 Research Paper Management System</p>
-      </footer>
+      <div className="w-full px-4 mt-8">
+        <ul>
+        {searchResults.map((result) => (
+        <PaperItem
+          key={result.id}
+          title={result.title}
+          authors={result.authors}
+          volume={result.volume}
+          year={result.year}
+          pages={result.pages}
+          link={result.link}
+          isLiked={likedPapers.includes(result.title)}
+          onLikeToggle={() => handleLike(result.title, result.volume, result.authors, result.year, result.pages, result.link)}
+        />
+      ))}
+        </ul>
+      </div>
     </div>
   );
- 
-}
+};
+

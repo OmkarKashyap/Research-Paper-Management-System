@@ -17,6 +17,7 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        customTeal: '#2a9d8f',
         primary: {
           "50": "#eff6ff",
           "100": "#dbeafe",

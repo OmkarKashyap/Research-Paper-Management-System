@@ -23,7 +23,7 @@ export default function Header() {
   };
 
   return (
-    <div className="bg-black fixed top-0 w-full z-30 clearNav md:bg-opacity-90 transition duration-300 ease-in-out">
+    <div className="bg-black fixed top-0 w-full z-30 clearNav transition duration-300 ease-in-out">
       <div className="flex flex-col max-w-6xl px-4 mx-auto md:items-center md:justify-between md:flex-row md:px-6 lg:px-8">
         <div className="flex flex-row items-center justify-between p-4">
           
@@ -74,7 +74,7 @@ export default function Header() {
                   href="/about"
                   className="font-medium text-gray-200 hover:text-gray-200 px-5 py-3 flex items-center transition duration-150 ease-in-out"
                 >
-                  About Us
+                  <Link href="/summarize">Search</Link>
                 </a>
               </li>
 

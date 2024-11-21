@@ -79,7 +79,7 @@ export default function Login() {
         />
         <button type="submit">Login</button>
       </form> */}
-      <section className="bg-slate-950">
+      <section className="bg-cd f">
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
         <a
           href="#"

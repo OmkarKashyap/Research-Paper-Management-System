@@ -12,12 +12,33 @@ import SearchResults from "../components/SearchResults";
 import PaperItem from '../components/PaperItem';
 import Header from '../components/Header';
 
+type Paper = {
+  title: string;
+  authors: string;
+  tags: string[];
+  arxiv_id: string;
+  abstract: string;
+};
+
+type APIResponse = {
+  papers: Paper[];
+};
+
+const sampleAPIResponse: APIResponse = { papers: [] };
+
 export default function Dashboard() {
+
   const [user, setUser] = useState<User | null>(null);
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [query, setQuery] = useState('');
   const [likedPapers, setLikedPapers] = useState<string[]>([]);
   const router = useRouter();
+
+  const [topic, setTopic] = useState<string>("");
+  const [tags, setTags] = useState<string>("");
+  const [apiResponse, setAPIResponse] = useState<APIResponse>(sampleAPIResponse);
+  const [submitted, setSubmitted] = useState<boolean>(false);
+  const [shouldSearch, setShouldSearch] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -66,6 +87,11 @@ export default function Dashboard() {
       console.log('Data fetched successfully:', data);
       setSearchResults(data);
     }
+    console.log('hi')
+    searchPapers();
+    console.log('bye')
+    // setShouldSearch(true);
+    // setSubmitted(false);
   };
 
   const handleLike = async (title: string, volume: string, authors: string, year: number, pages: string, link: string) => {
@@ -157,8 +183,37 @@ export default function Dashboard() {
     setQuery(value);
   };
 
+  const searchPapers = async () => {
+    const obj = {topic: query, tags: []};
+    try {
+      const response = await fetch("http://localhost:8000/search_papers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(obj),
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const data: APIResponse = await response.json();
+      setAPIResponse(data);
+      setSubmitted(true);
+    } catch (error) {
+      console.error("Error fetching papers:", error);
+      alert("An error occurred while fetching papers.");
+    }
+  };
+
+
+  // const handleKeyPress = (e: React.KeyboardEvent) => {
+  //   if (e.key === 'Enter') {
+  //     e.preventDefault();
+  //     handleSearchClick();
+  //   }
+
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col items-center">
+    <div className="mt-10 min-h-screen bg-black text-white flex flex-col items-center">
       <Header />
       <div className="flex items-center max-w-lg w-full mt-10 space-x-2">
         <input
@@ -175,6 +230,21 @@ export default function Dashboard() {
           <svg fill="#000000" width="20px" height="28px" viewBox="0 -0.24 28.423 28.423" id="_02_-_Search_Button" data-name="02 - Search Button" xmlns="http://www.w3.org/2000/svg">
   <path id="Path_215" data-name="Path 215" d="M14.953,2.547A12.643,12.643,0,1,0,27.6,15.19,12.649,12.649,0,0,0,14.953,2.547Zm0,2A10.643,10.643,0,1,1,4.31,15.19,10.648,10.648,0,0,1,14.953,4.547Z" transform="translate(-2.31 -2.547)" fill-rule="evenodd"/>   <path id="Path_216" data-name="Path 216" d="M30.441,28.789l-6.276-6.276a1,1,0,1,0-1.414,1.414L29.027,30.2a1,1,0,1,0,1.414-1.414Z" transform="translate(-2.31 -2.547)" fill-rule="evenodd"/>
  </svg>
+        </button>
+
+        <input
+          className="w-full p-3 rounded-l-lg bg-black text-white placeholder-gray-400 border border-gray-700 focus:outline-none"
+          type="text"
+          placeholder="e.g., Black Holes"
+          value={topic}
+          onChange={(e) => setTopic(e.target.value)}
+        />
+        <button
+          className="p-3 bg-white text-black rounded-r-lg flex items-center justify-center"
+        >
+        <svg fill="#000000" width="20px" height="28px" viewBox="0 -0.24 28.423 28.423" id="_02_-_Search_Button" data-name="02 - Search Button" xmlns="http://www.w3.org/2000/svg">
+          <path id="Path_215" data-name="Path 215" d="M14.953,2.547A12.643,12.643,0,1,0,27.6,15.19,12.649,12.649,0,0,0,14.953,2.547Zm0,2A10.643,10.643,0,1,1,4.31,15.19,10.648,10.648,0,0,1,14.953,4.547Z" transform="translate(-2.31 -2.547)" fill-rule="evenodd"/>   <path id="Path_216" data-name="Path 216" d="M30.441,28.789l-6.276-6.276a1,1,0,1,0-1.414,1.414L29.027,30.2a1,1,0,1,0,1.414-1.414Z" transform="translate(-2.31 -2.547)" fill-rule="evenodd"/>
+        </svg>
         </button>
       </div>
 
